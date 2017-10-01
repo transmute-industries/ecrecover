@@ -10,8 +10,8 @@ const WalletSubprovider = require("web3-provider-engine/subproviders/wallet.js")
 const FetchSubprovider = require("web3-provider-engine/subproviders/fetch.js");
 
 const engine = new ProviderEngine();
+const web3 = new Web3(engine);
 const mnemonic = bip39.generateMnemonic();
-
 const hdwallet = hdkey.fromMasterSeed(bip39.mnemonicToSeed(mnemonic));
 const walletHDPath = "m/44'/60'/0'/0/";
 const wallet = hdwallet.derivePath(walletHDPath + "0").getWallet();
@@ -24,22 +24,14 @@ engine.addProvider(
   })
 );
 engine.start();
-const web3 = new Web3(engine);
 
-const {
-  getAddress,
-  signMessage,
-  testRecover,
-  testUnPrefixedSignature,
-  testPrefixedSignature,
-  testAll
-} = require("./common");
+const { testUnPrefixedSignature, testPrefixedSignature } = require("./common");
 
 describe("WalletSubprovider", () => {
   it("rejects prefixed signatures", async () => {
     assert(!await testPrefixedSignature(web3, address));
   });
-  it("rejects un-prefixed signatures", async () => {
-    assert(!await testUnPrefixedSignature(web3, address));
+  it("accepts un-prefixed signatures", async () => {
+    assert(await testUnPrefixedSignature(web3, address));
   });
 });
