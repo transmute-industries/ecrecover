@@ -17,12 +17,12 @@ const {
   signMessage,
   testRecover,
   testUnPrefixedSignature,
-  testPrefixedSignature
+  testPrefixedSignature,
+  testAll
 } = require("./common");
 
 new Promise(async (resolve, reject) => {
   const address = await getAddress(web3);
-  await testUnPrefixedSignature(web3, address);
-  await testPrefixedSignature(web3, address);
+  await testAll(web3, address);
   resolve(true);
 });

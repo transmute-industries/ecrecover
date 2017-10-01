@@ -27,12 +27,30 @@ const testRecover = (address, data, sig) => {
   return address === addr;
 };
 
+const testRaw = async (web3, address) => {
+  var privkey = new Buffer(
+    "3c9229289a6125f7fdf1885a77bb12c37a8d3b4962d936f7e3084dece32a3ca1",
+    "hex"
+  );
+  var data = util.sha3("a");
+  var vrs = util.ecsign(data, privkey);
+  var pubkey = util.ecrecover(data, vrs.v, vrs.r, vrs.s);
+  // recovered public key matches private key used to sign
+  var check1 =
+    pubkey.toString("hex") == util.privateToPublic(privkey).toString("hex");
+  var check2 =
+    util.publicToAddress(pubkey).toString("hex") ==
+    util.privateToAddress(privkey).toString("hex");
+  // recovered address matches private address used to sign
+  console.log("testRaw:\t\t\t", check1 && check2);
+};
+
 const testUnPrefixedSignature = async (web3, address) => {
   const msg = web3.sha3("hello!");
   const sig = await signMessage(web3, address, msg);
   const messageBuffer = util.toBuffer(msg);
   const success = testRecover(address, messageBuffer, sig);
-  console.log("Un-Prefixed Works:\t", false);
+  console.log("testUnPrefixedSignature:\t", false);
 };
 
 const testPrefixedSignature = async (web3, address) => {
@@ -44,7 +62,13 @@ const testPrefixedSignature = async (web3, address) => {
     Buffer.concat([prefix, new Buffer(String(msg.length)), msg])
   );
   const success = testRecover(address, prefixedMsgBuffer, sig);
-  console.log("Prefix Works:\t\t", success);
+  console.log("testPrefixedSignature:\t\t", success);
+};
+
+const testAll = async (web3, address) => {
+  await testRaw(web3, address);
+  await testUnPrefixedSignature(web3, address);
+  await testPrefixedSignature(web3, address);
 };
 
 module.exports = {
@@ -52,5 +76,6 @@ module.exports = {
   signMessage,
   testRecover,
   testUnPrefixedSignature,
-  testPrefixedSignature
+  testPrefixedSignature,
+  testAll
 };

@@ -18,7 +18,7 @@ const address = "0x" + wallet.getAddress().toString("hex");
 engine.addProvider(new WalletSubprovider(wallet, {}));
 engine.addProvider(
   new FetchSubprovider({
-    rpcUrl: "https://rinkeby.infura.io"
+    rpcUrl: "http://localhost:8545"
   })
 );
 engine.start();
@@ -29,12 +29,12 @@ const {
   signMessage,
   testRecover,
   testUnPrefixedSignature,
-  testPrefixedSignature
+  testPrefixedSignature,
+  testAll
 } = require("./common");
 
 new Promise(async (resolve, reject) => {
   const address = await getAddress(web3);
-  await testUnPrefixedSignature(web3, address);
-  await testPrefixedSignature(web3, address);
+  await testAll(web3, address);
   resolve(true);
 });
