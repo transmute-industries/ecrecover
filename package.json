@@ -18,7 +18,9 @@
   },
   "homepage": "https://github.com/transmute-industries/ecrecover#readme",
   "dependencies": {
+    "bip39": "^2.4.0",
     "ethereumjs-util": "^5.1.2",
+    "ethereumjs-wallet": "^0.6.0",
     "web3": "0.19.0",
     "web3-provider-engine": "^13.2.9"
   }
