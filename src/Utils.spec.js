@@ -2,9 +2,9 @@ const assert = require("assert");
 const Web3 = require("web3");
 const util = require("ethereumjs-util");
 
-const com = require("./Common");
+const com = require("./Com");
 
-describe("Util ", function() {
+describe("Utils", function() {
   it("util.ecsign + util.ecrecover work as expected", () => {
     var privkey = new Buffer(
       "3c9229289a6125f7fdf1885a77bb12c37a8d3b4962d936f7e3084dece32a3ca1",

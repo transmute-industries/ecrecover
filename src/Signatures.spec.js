@@ -1,7 +1,7 @@
 var assert = require("assert");
 const _ = require("lodash");
 const util = require("ethereumjs-util");
-const com = require("./Common");
+const com = require("./Com");
 const Web3Providers = require("./Web3Providers");
 
 const walletProviders = {

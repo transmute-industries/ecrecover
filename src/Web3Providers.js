@@ -10,7 +10,7 @@ const Transaction = require("ethereumjs-tx");
 const bip39 = require("bip39");
 const hdkey = require("ethereumjs-wallet/hdkey");
 
-const com = require("./Common");
+const com = require("./Com");
 
 module.exports.getWalletProvider = async rpcUrl => {
   const engine = new ProviderEngine();
