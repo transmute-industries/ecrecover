@@ -28,21 +28,54 @@ module.exports.testRecover = (address, data, sig) => {
   return address === addr;
 };
 
-module.exports.testUnPrefixedSignature = async (web3, address) => {
-  const msg = new Buffer("hello");
+module.exports.prepareStringForSigning = value => {
+  const msg = new Buffer(value);
   const msgHex = "0x" + msg.toString("hex");
-  const sig = await module.exports.signMessage(web3, address, msgHex);
-  const messageBuffer = util.toBuffer(util.sha3(msg));
-  return module.exports.testRecover(address, messageBuffer, sig);
+  return {
+    msg,
+    msgHex
+  };
 };
 
-module.exports.testPrefixedSignature = async (web3, address) => {
-  const msg = new Buffer("hello");
-  const msgHex = "0x" + msg.toString("hex");
-  const sig = await module.exports.signMessage(web3, address, msgHex);
+module.exports.getSha3BufferOfPrefixedMessage = msg => {
   const prefix = new Buffer("\x19Ethereum Signed Message:\n");
   const prefixedMsgBuffer = util.sha3(
     Buffer.concat([prefix, new Buffer(String(msg.length)), msg])
   );
-  return module.exports.testRecover(address, prefixedMsgBuffer, sig);
+  return prefixedMsgBuffer;
+};
+
+module.exports.getSha3BufferOfMessage = msg => {
+  return util.toBuffer(util.sha3(msg));
+};
+
+module.exports.testSignatureRecovery = async (web3, address, isPrefixed) => {
+  const msgObj = module.exports.prepareStringForSigning("hello!");
+  const sig = await module.exports.signMessage(web3, address, msgObj.msgHex);
+  let messageBuffer;
+  if (isPrefixed) {
+    messageBuffer = module.exports.getSha3BufferOfPrefixedMessage(msgObj.msg);
+  } else {
+    messageBuffer = module.exports.getSha3BufferOfMessage(msgObj.msg);
+  }
+  return module.exports.testRecover(address, messageBuffer, sig);
+};
+
+module.exports.getSignatureType = async (web3, address) => {
+  const prefix = await module.exports.testSignatureRecovery(
+    web3,
+    address,
+    true
+  );
+  const unprefixed = await module.exports.testSignatureRecovery(
+    web3,
+    address,
+    false
+  );
+  if (prefix && !unprefixed) {
+    return "PREFIX";
+  }
+  if (!prefix && unprefixed) {
+    return "NO-PREFIX";
+  }
 };

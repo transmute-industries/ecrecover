@@ -57,9 +57,12 @@ const com = require("./common");
 
 describe("HookedWalletProvider", () => {
   it("rejects prefixed signatures", async () => {
-    assert(!await com.testPrefixedSignature(web3, addressHex));
+    assert(!await com.testSignatureRecovery(web3, addressHex, true));
   });
   it("accepts un-prefixed signatures", async () => {
-    assert(await com.testUnPrefixedSignature(web3, addressHex));
+    assert(await com.testSignatureRecovery(web3, addressHex, false));
+  });
+  it("getSignatureType return NO-PREFIX", async () => {
+    assert("NO-PREFIX" === (await com.getSignatureType(web3, addressHex)));
   });
 });

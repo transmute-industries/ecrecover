@@ -15,21 +15,22 @@ engine.addProvider(
 );
 engine.start();
 
-const {
-  getAddress,
-  testUnPrefixedSignature,
-  testPrefixedSignature
-} = require("./common");
+const com = require("./common");
 
 describe("FetchSubprovider", () => {
   let address;
+  const IS_PREFIXED = true;
   before(async () => {
-    address = await getAddress(web3);
+    address = await com.getAddress(web3);
   });
   it("accepts prefixed signatures", async () => {
-    assert(await testPrefixedSignature(web3, address));
+    assert(await com.testSignatureRecovery(web3, address, IS_PREFIXED));
   });
   it("rejects un-prefixed signatures", async () => {
-    assert(!await testUnPrefixedSignature(web3, address));
+    assert(!await com.testSignatureRecovery(web3, address, !IS_PREFIXED));
+  });
+
+  it("getSignatureType return PREFIX", async () => {
+    assert("PREFIX" === (await com.getSignatureType(web3, address)));
   });
 });

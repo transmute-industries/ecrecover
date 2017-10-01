@@ -2,17 +2,28 @@ const assert = require("assert");
 const Web3 = require("web3");
 const util = require("ethereumjs-util");
 
-const { getAddress, testPrefixedSignature } = require("./common");
+const com = require("./common");
 
 describe("Web3 ", function() {
+  let address, web3;
+  before(async () => {
+    web3 = new Web3(new Web3.providers.HttpProvider("http://localhost:8545"));
+    address = await com.getAddress(web3);
+  });
   it("accepts prefixed signatures", async () => {
-    const web3 = new Web3(
-      new Web3.providers.HttpProvider("http://localhost:8545")
-    );
-    const address = await getAddress(web3);
-    assert(await testPrefixedSignature(web3, address));
+    assert(await com.testSignatureRecovery(web3, address, true));
   });
 
+  it("rejects un-prefixed signatures", async () => {
+    assert(!await com.testSignatureRecovery(web3, address, false));
+  });
+
+  it("getSignatureType return NO-PREFIX", async () => {
+    assert("PREFIX" === (await com.getSignatureType(web3, address)));
+  });
+});
+
+describe("Util ", function() {
   it("util.ecsign + util.ecrecover work as expected", () => {
     var privkey = new Buffer(
       "3c9229289a6125f7fdf1885a77bb12c37a8d3b4962d936f7e3084dece32a3ca1",

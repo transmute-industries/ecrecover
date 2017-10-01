@@ -25,13 +25,17 @@ engine.addProvider(
 );
 engine.start();
 
-const { testUnPrefixedSignature, testPrefixedSignature } = require("./common");
+const com = require("./common");
 
 describe("WalletSubprovider", () => {
   it("rejects prefixed signatures", async () => {
-    assert(!await testPrefixedSignature(web3, address));
+    assert(!await com.testSignatureRecovery(web3, address, true));
   });
   it("accepts un-prefixed signatures", async () => {
-    assert(await testUnPrefixedSignature(web3, address));
+    assert(await com.testSignatureRecovery(web3, address, false));
+  });
+
+  it("getSignatureType return NO-PREFIX", async () => {
+    assert("NO-PREFIX" === (await com.getSignatureType(web3, address)));
   });
 });
